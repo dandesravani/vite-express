@@ -15,6 +15,7 @@ interface SentencesViewProps {
 }
 
 export const SentencesView: React.FC<SentencesViewProps> = ({ sentences }) => {
+  console.log(sentences)
   return (
     <>
       <TableContainer>
@@ -27,7 +28,7 @@ export const SentencesView: React.FC<SentencesViewProps> = ({ sentences }) => {
           <Tbody>
             {sentences.map((sentence, idx) => (
               <Tr key={idx}>
-                <Td>{sentence}</Td>
+                <Td>{sentence.sentence}</Td>
               </Tr>
             ))}
           </Tbody>

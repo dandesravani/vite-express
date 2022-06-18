@@ -1,88 +1,58 @@
 import {
-  Box,
   Flex,
   Heading,
-  HStack,
-  Input,
-  InputGroup,
-  InputRightAddon,
-  Text,
+  HStack
 } from '@chakra-ui/react'
 import React from 'react'
-import useSWR from 'swr'
+import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { AddSentenceForm } from './components/AddSentenceForm'
 import { PageSize } from './components/PageSize'
 import { Paginator } from './components/Paginator'
 import { SentencesView } from './components/SentencesView'
 
-const fetcher = (args: string) => fetch(args).then(res => res.json())
+
+const fetchSentences = async ({ queryKey }: any) => {
+  console.log(queryKey)
+  const res = await fetch(`/api/${queryKey[0]}?page=${queryKey[1]}&size=${queryKey[2]}`);
+  return res.json();
+};
+
+const postSentence = (val: string) => {
+  const requestOptions = {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ sentence: val }),
+  }
+
+  return fetch('/api/sentences', requestOptions)
+    .then(res => res.json())
+    .catch(err => console.log(err))
+}
 
 function App() {
   const [page, setPage] = React.useState(1)
   const [size, setSize] = React.useState(5)
-  const [sentence, setSentence] = React.useState('')
   const [values, setValues] = React.useState([])
 
-  const { data, error } = useSWR(
-    `http://localhost:4000/sentences?page=${page}&size=${size}`,
-    fetcher,
-  )
-  if (error) {
-    return (
-      <Text fontSize="sm" color="red">
-        {error}
-      </Text>
-    )
-  }
-  if (!data) {
-    return <Text>Loading...</Text>
-  }
-
-  React.useEffect(() => {
-    fetch(`http://localhost:4000/sentences?page=${page}&size=${size}`)
-      .then(res => res.json())
-      .then(data => setValues(data.sentencesPerPage))
-      .catch(err => console.log(err))
-  }, [])
-
-  const handleAddClick = (val: string) => {
-    const requestOptions = {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ sentence: val }),
+  const { data, status } = useQuery(['sentences', page, size], fetchSentences)
+  const queryClient = useQueryClient()
+  const { mutate } = useMutation(postSentence, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(['sentences'])
     }
-    fetch('http://localhost:4000/sentences', requestOptions)
-      .then(res => res.json())
-      .then(data => {
-        console.log(data, 'data')
-        setValues(data)
-      })
-      .catch(err => console.log(err))
-  }
+  })
 
+  if (status === "error") { return <p>Error fetching data</p> }
+  if (status === "loading") { return <p>loading data...</p> }
+
+
+  console.log(data)
   return (
     <>
-      <Flex alignItems="center" justifyContent="center" mt="20px">
-        <Box w="600px">
-          <InputGroup>
-            <Input
-              type="tel"
-              placeholder="Add sentence"
-              value={sentence}
-              onChange={evt => setSentence(evt.target.value)}
-            />
-            <InputRightAddon
-              children="Add"
-              onClick={() => {
-                handleAddClick(sentence)
-                setSentence('')
-              }}
-            />
-          </InputGroup>
-        </Box>
-      </Flex>
+      <AddSentenceForm onAddSentence={mutate} />
       <SentencesView
-        sentences={values.length == 0 ? data.sentencesPerPage : values}
+        // sentences={values.length == 0 ? data.sentencesPerPage : values}
+        sentences={data.sentencesPerPage}
       />
       <Flex flexDir="column" alignItems="center" mt="10px">
         <HStack>
