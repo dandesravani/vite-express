@@ -17,7 +17,7 @@ interface TodoListProps {
   isEdit: boolean
   onEditChange(edit: boolean): void
   onTodoDelete(id: string): void
-  onEditTodo(todo: Omit<Todo, 'id'>): void
+  onEditTodo(todo: Todo): void
 }
 
 export const TodoList: React.FC<TodoListProps> = ({

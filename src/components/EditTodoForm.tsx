@@ -11,10 +11,10 @@ import React from 'react'
 import { Todo } from './data'
 
 interface EditFormProps {
-  readonly todo: Omit<Todo, 'id'>
+  readonly todo: Todo
   readonly isEdit: boolean
   onIsEdit(isEdit: boolean): void
-  onEditTodo(todo: Omit<Todo, 'id'>): void
+  onEditTodo(todo: Todo): void
 }
 
 export const EditTodoForm: React.FC<EditFormProps> = ({
@@ -24,6 +24,7 @@ export const EditTodoForm: React.FC<EditFormProps> = ({
   onIsEdit,
 }) => {
   const [editedTodo, setEditedTodo] = React.useState({
+    id: todo.id,
     title: todo.title,
     done: todo.done,
   })
@@ -41,7 +42,7 @@ export const EditTodoForm: React.FC<EditFormProps> = ({
             evt.preventDefault()
             onEditTodo(editedTodo)
             onIsEdit(isEdit)
-            setEditedTodo({ title: '', done: false })
+            setEditedTodo({ id: todo.id, title: '', done: false })
           }}
         >
           <FormControl>

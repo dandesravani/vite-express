@@ -24,7 +24,6 @@ const postTodo = async (todo: Todo) => {
 
 const editTodo = async (todo: Todo) => {
   const result = await axios.put(`/api/todos/${todo.id}`, todo)
-  console.log(result.data, 'from server')
   return result.data
 }
 
@@ -37,7 +36,7 @@ function App() {
   const [page, setPage] = React.useState(1)
   const [size, setSize] = React.useState(5)
   const [show, setShow] = React.useState(false)
-  const [todo, setTodo] = React.useState({ title: '', done: false })
+  const [todo, setTodo] = React.useState({ id: '', title: '', done: false })
   const [isEdit, setEdit] = React.useState(false)
 
   const { data, status } = useQuery(['todos', page, size], fetchTodos)
