@@ -37,6 +37,7 @@ export const AddTodoForm: React.FC<AddTodoFormProps> = ({
               onSubmit={evt => {
                 evt.preventDefault()
                 onAddTodo(todo)
+                onShow(show)
                 setTodo({ title: '', done: false })
               }}
             >
@@ -61,12 +62,7 @@ export const AddTodoForm: React.FC<AddTodoFormProps> = ({
                   Done
                 </Checkbox>
               </FormControl>
-              <Button
-                colorScheme="blue"
-                type="submit"
-                mt="10px"
-                onClick={() => onShow(show)}
-              >
+              <Button colorScheme="blue" type="submit" mt="10px">
                 Submit
               </Button>
             </form>

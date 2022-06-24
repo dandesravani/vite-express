@@ -7,3 +7,11 @@ export const Todo = z.object({
 })
 
 export type Todo = z.infer<typeof Todo>
+
+export const User = z.object({
+  username: z.string(),
+  email: z.string(),
+  password: z.string()
+})
+
+export type User = z.infer<typeof User>
